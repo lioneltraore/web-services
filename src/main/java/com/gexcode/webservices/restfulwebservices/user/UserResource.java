@@ -1,5 +1,6 @@
 package com.gexcode.webservices.restfulwebservices.user;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,9 +37,14 @@ public class UserResource {
 
     // Create a new user
     @PostMapping("/users")
-    public ResponseEntity<User> save(@RequestBody User user) throws URISyntaxException {
+    public ResponseEntity<User> save(@Valid @RequestBody User user) throws URISyntaxException {
         User newUser = this.service.save(user);
         URI location = new URI("/users/" + user.getId());
         return ResponseEntity.created(location).build();
+    }
+
+    @DeleteMapping("/users/{id}")
+    public void delete(@PathVariable int id) {
+        this.service.delete(id);
     }
 }

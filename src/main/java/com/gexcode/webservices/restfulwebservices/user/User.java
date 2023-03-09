@@ -1,11 +1,16 @@
 package com.gexcode.webservices.restfulwebservices.user;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+
 import java.time.LocalDate;
 
 public class User {
 
     private Integer id;
+    @NotBlank(message = "Name is mandatory")
     private String name;
+    @Past
     private LocalDate birthDate;
 
     public User(Integer id, String name, LocalDate birthDate) {
