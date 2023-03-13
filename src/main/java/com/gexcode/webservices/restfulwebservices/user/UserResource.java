@@ -1,20 +1,27 @@
 package com.gexcode.webservices.restfulwebservices.user;
 
 import jakarta.validation.Valid;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 public class UserResource {
 
     private UserDaoService service;
 
-    public UserResource(UserDaoService service) {
+    private MessageSource messageSource;
+
+    public UserResource(UserDaoService service, MessageSource messageSource) {
+
         this.service = service;
+        this.messageSource = messageSource;
     }
 
     // Get all users
@@ -46,5 +53,13 @@ public class UserResource {
     @DeleteMapping("/users/{id}")
     public void delete(@PathVariable int id) {
         this.service.delete(id);
+    }
+
+    @GetMapping("/hello")
+    public String getHello() {
+        Locale locale = LocaleContextHolder.getLocale();
+        System.out.println(locale.getLanguage());
+        return messageSource
+                .getMessage("good.morning.message", null, "Default message", locale);
     }
 }
