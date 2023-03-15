@@ -1,5 +1,8 @@
 package com.gexcode.webservices.restfulwebservices.filtering;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("excludeColor")
 public class Vehicle {
 
     private String color;
