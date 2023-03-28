@@ -1,22 +1,34 @@
 package com.gexcode.webservices.restfulwebservices.user;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 
 import java.time.LocalDate;
 
+@Entity(name = "mono_user")
 public class User {
 
+    @Id
+    @GeneratedValue
     private Integer id;
     @NotBlank(message = "Name is mandatory")
+    @Column
     private String name;
     @Past
+    @Column
     private LocalDate birthDate;
 
     public User(Integer id, String name, LocalDate birthDate) {
         this.id = id;
         this.name = name;
         this.birthDate = birthDate;
+    }
+
+    public User() {
     }
 
     public Integer getId() {
