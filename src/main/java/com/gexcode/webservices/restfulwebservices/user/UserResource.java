@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @RestController
 public class UserResource {
@@ -18,41 +19,44 @@ public class UserResource {
 
     private MessageSource messageSource;
 
-    public UserResource(UserDaoService service, MessageSource messageSource) {
+    private UserRepository userRepository;
+
+    public UserResource(UserDaoService service, MessageSource messageSource, UserRepository userRepository) {
 
         this.service = service;
         this.messageSource = messageSource;
+        this.userRepository = userRepository;
     }
 
     // Get all users
     @GetMapping("/users")
     public List<User> findAll() {
-        return this.service.findAll();
+        return this.userRepository.findAll();
     }
 
     // find one user by id
     @GetMapping("/users/{id}")
     public User findAll(@PathVariable Integer id) {
-        User user = this.service.findOne(id);
+        Optional<User> user = this.userRepository.findById(id);
 
-        if(user == null) {
+        if(user.isEmpty()) {
             throw new UserNotFoundException("id: " + id);
         }
 
-        return user;
+        return user.get();
     }
 
     // Create a new user
     @PostMapping("/users")
     public ResponseEntity<User> save(@Valid @RequestBody User user) throws URISyntaxException {
-        User newUser = this.service.save(user);
-        URI location = new URI("/users/" + user.getId());
+        User newUser = this.userRepository.save(user);
+        URI location = new URI("/users/" + newUser.getId());
         return ResponseEntity.created(location).build();
     }
 
     @DeleteMapping("/users/{id}")
     public void delete(@PathVariable int id) {
-        this.service.delete(id);
+        this.userRepository.deleteById(id);
     }
 
     @GetMapping("/hello")
