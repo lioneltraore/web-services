@@ -21,11 +21,14 @@ public class UserResource {
 
     private UserRepository userRepository;
 
-    public UserResource(UserDaoService service, MessageSource messageSource, UserRepository userRepository) {
+    private PostRepository postRepository;
+
+    public UserResource(UserDaoService service, MessageSource messageSource, UserRepository userRepository, PostRepository postRepository) {
 
         this.service = service;
         this.messageSource = messageSource;
         this.userRepository = userRepository;
+        this.postRepository = postRepository;
     }
 
     // Get all users
@@ -65,5 +68,34 @@ public class UserResource {
         System.out.println(locale.getLanguage());
         return messageSource
                 .getMessage("good.morning.message", null, "Default message", locale);
+    }
+
+    @GetMapping("/users/{userId}/posts")
+    public List<Post> findUserPosts(@PathVariable int userId) {
+
+        Optional<User> user = this.userRepository.findById(userId);
+
+        if(user.isEmpty()) {
+            throw new UserNotFoundException("id: " + userId);
+        }
+
+        List<Post> posts = user.get().getPosts();
+
+        return posts;
+    }
+
+    @PostMapping("/users/{id}/posts")
+    public ResponseEntity<Post> savePost(@Valid @RequestBody Post post, @PathVariable("id") Integer userId) throws URISyntaxException {
+        Optional<User> user = this.userRepository.findById(userId);
+
+        if(user.isEmpty()) {
+            throw new UserNotFoundException("id: " + userId);
+        }
+
+        post.setUser(user.get());
+
+        Post newPost = postRepository.save(post);
+        URI location = new URI("/posts/" + newPost.getId());
+        return ResponseEntity.created(location).build();
     }
 }
